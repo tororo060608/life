@@ -22,9 +22,12 @@ class Stage():
         self.all = pygame.sprite.Group()
         self.mc = pygame.sprite.Group()
         self.enemys = pygame.sprite.Group()
-        obj.Obj.containers = self.all
+        self.objs = pygame.sprite.Group()
+        self.Mybullets = pygame.sprite.Group()
+        obj.Obj.containers = self.all,self.objs
         obj.MyChara.containers = self.all,self.mc
         obj.Enemy.containers = self.all,self.enemys
+        obj.MyBullet.containers = self.all,self.Mybullets
         obj.make_obj(self.GS,self.maplist,self.objdict)
         self.bgimg = image.load_image("../picture/obj/floor.png")
         

@@ -25,6 +25,7 @@ class Obj(pygame.sprite.Sprite):
     def update(self,screen):
         self.draw(screen)
 
+        
 class Chara(Obj):
     def __init__(self,imagedict,x,y,hp,atk,defe,speed):
         Obj.__init__(self,x,y)
@@ -46,10 +47,10 @@ class Chara(Obj):
         self.speed = speed
         self.vx = 0
         self.vy = 0
-        
+
     def draw(self,screen):
-        draw_x = self.x + self.width / 2 - self.image_width
-        draw_y = self.y + self.height / 2 - self.image_height
+        draw_x = self.x + self.width / 2 - self.image_width / 2
+        draw_y = self.y + self.height / 2 - self.image_height / 2
         screen.blit(self.image,(draw_x,draw_y))
 
     def animetion(self,screen):
@@ -58,36 +59,112 @@ class Chara(Obj):
         self.image = self.animelist[self.frame // self.animecycle
                                     % self.imgobj.num]
         self.draw(screen)
-        
-    def update(self,screen):
-        self.animetion(screen)
 
+    def obj_collide(self,objgroup):
+        newx = self.x + self.vx
+        newrect = Rect(newx,self.y,self.width,self.height)
+        for obj in objgroup:
+            collide = newrect.colliderect(obj.rect)
+            if collide:
+                if self.vx > 0:
+                    self.x = obj.rect.left - self.width
+                    self.vx = 0
+                elif self.vx < 0:
+                    self.x = obj.rect.right
+                    self.vx = 0
+                break
+            else:
+                self.x = newx
+        self.vx = 0
+        
+        newy = self.y + self.vy
+        newrect = Rect(self.x,newy,self.width,self.height)
+        for obj in objgroup:
+            collide = newrect.colliderect(obj.rect)
+            if collide:
+                if self.vy > 0:
+                    self.y = obj.rect.top - self.height
+                    self.vy = 0
+                elif self.vy < 0:
+                    self.y = obj.rect.bottom
+                    self.vy = 0
+                break
+            else:
+                self.y = newy
+        self.vy = 0
+        
+        self.rect = Rect(self.x,self.y,self.width,self.height)
+        
+    def move(self,objgroup):
+        self.obj_collide(objgroup)
+        
+    def update(self,screen,objgroup):
+        self.animetion(screen)
+        self.move(objgroup)
+        self.frame += 1
         
 class MyChara(Chara):
     def __init__(self,imagedict,x,y,hp,atk,defe,speed,stamina):
         Chara.__init__(self,imagedict,x,y,hp,atk,defe,speed)
         self.stamina = stamina
-
-    def switch_moment(self,pre_action):
-        if self.action != pre_action:
-            self.frame = 0
-
-    def move(self):
-        self.x += self.vx
-        self.y += self.vy
-        self.vx = 0
-        self.vy = 0
+        self.weapon_wide = 64
+        self.weapon_length = 32
 
     def attack(self):
-        pass
-
-    def update(self,screen):
-        Chara.update(self,screen)
-        self.move()
+        if self.action == "lwalk" or self.action == "lstand":
+            MyBullet(self.x - self.weapon_length,
+                   self.y - (self.weapon_wide - self.height) / 2,
+                   self.weapon_length,
+                   self.weapon_wide,
+                   self.atk,0)
+        if self.action == "rwalk" or self.action == "rstand":
+            MyBullet(self.x + self.weapon_length,
+                   self.y - (self.weapon_wide - self.height) / 2,
+                   self.weapon_length,
+                   self.weapon_wide,
+                   self.atk,0)
+        if self.action == "fwalk" or self.action == "fstand":
+            MyBullet(self.x - (self.weapon_wide - self.width) / 2,
+                   self.y + self.height,
+                   self.weapon_wide,
+                   self.weapon_length,
+                   self.atk,0)
+        if self.action == "bwalk" or self.action == "bstand":
+            MyBullet(self.x - (self.weapon_wide - self.width) / 2,
+                   self.y - self.height,
+                   self.weapon_wide,
+                   self.weapon_length,
+                   self.atk,0)
+    
+    def update(self,screen,objgroup):
+        Chara.update(self,screen,objgroup)
 
 class Enemy(Chara):
     def __init__(self,imagedict,x,y,hp,atk,defe,speed):
         Chara.__init__(self,imagedict,x,y,hp,atk,defe,speed)
+
+class Bullet(Obj):
+    def __init__(self,x,y,width,height,atk,speed,filename = None):
+        Obj.__init__(self,x,y,filename)
+        self.width = width
+        self.height = height
+        self.rect = Rect(self.x,self.y,self.width,self.height)
+        self.atk = atk
+        self.speed = speed
+
+    def move(self):
+        self.x += self.speed
+        self.y += self.speed
+        self.rect = Rect(self.x,self.y,self.width,self.height)
+
+    def update(self,screen):
+        self.move()
+
+        
+class MyBullet(Bullet):
+    def __init__(self,x,y,width,height,atk,speed,filename = None):
+        Bullet.__init__(self,x,y,width,height,atk,speed,filename)
+
 
 
 def make_obj(GS,maplist,dict):

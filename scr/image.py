@@ -15,13 +15,13 @@ def load_image(filename,colorkey = None):
 
 
 def split_image(image,num,colorkey = None):
-    width = image.get_width()
+    image_width = image.get_width()
     height = image.get_height()
     imagelist = []
-    size = width / num
+    one_width = image_width // num
     for i in range(0,num):
-        surface = pygame.Surface((width,height))
-        surface.blit(image,(0,0),(i * size,0,width,height))
+        surface = pygame.Surface((one_width,height))
+        surface.blit(image,(0,0),(i * one_width,0,one_width,height))
         surface.set_colorkey(surface.get_at((0,0)),RLEACCEL)
         surface.convert()
         imagelist.append(surface)
