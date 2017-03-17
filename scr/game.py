@@ -40,31 +40,11 @@ class Game():
                     sys.exit()
                 if event.key == K_a:
                     self.mchara.attack()
-        pressed_key = pygame.key.get_pressed()
-        if pressed_key[K_LEFT]:
-            self.mchara.vx = -self.mchara.speed
-            self.mchara.action = "lwalk"
-        if pressed_key[K_RIGHT]:
-            self.mchara.vx = self.mchara.speed
-            self.mchara.action = "rwalk"
-        if pressed_key[K_DOWN]:
-            self.mchara.vy = self.mchara.speed
-            self.mchara.action = "fwalk"
-        if pressed_key[K_UP]:
-            self.mchara.vy = -self.mchara.speed
-            self.mchara.action = "bwalk"
-        if not 1 in pressed_key:
-            if self.mchara.action == "lwalk":
-                self.mchara.action = "lstand"
-            if self.mchara.action == "rwalk":
-                self.mchara.action = "rstand"
-            if self.mchara.action == "fwalk":
-                self.mchara.action = "fstand"
-            if self.mchara.action == "bwalk":
-                self.mchara.action = "bstand"
         self.stage.objs.update(self.screen)
-        self.stage.mc.update(self.screen,self.stage.objs)
-        self.stage.enemys.update(self.screen)
+        self.stage.mc.update(self.screen,self.stage.objs,
+                             self.stage.enemys)
+        self.stage.enemys.update(self.screen,self.stage.objs,
+                                 self.stage.mc)
         self.stage.Mybullets.update(self.screen)
         
     def update(self):
