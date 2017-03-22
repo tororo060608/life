@@ -55,12 +55,7 @@ class Enemy(obj.Chara):
                     self.dire = "front"
                 elif y < 0:
                     self.dire = "back"
-            obj.Chara.move(objgroup)
-
-    def update(self,screen,objgroup,targetgroup):
-        self.animation(screen)
-        self.move(objgroup,targetgroup)
-        self.frame += 1
+            obj.Chara.move(self,objgroup)
 
 class Boar(Enemy):
     def __init__(self,imagedict,x,y,hp,atk,defe,speed):
@@ -100,16 +95,32 @@ class Boar(Enemy):
             if collide:
                 self.action = "stop"
                 self.frame = 0
+
+    def hit_bullet(self,blts):
+        if self.invincibletime > 50:
+            self.invincibletime = 0
+        elif self.invincibletime:
+            self.invincibletime += 1
+            return
+        for blt in blts:
+            collide = self.rect.colliderect(blt.rect)
+            if collide:
+                dmg = self.damage(blt)
+                self.hp -= dmg
+                self.action = "stop"
+                self.frame = 0
+                self.invincibletime += 1
                 
     def stop(self):
-        if self.action == "stop" and self.frame > 10:
+        if self.action == "stop" and self.frame > 20:
             self.action = "stand"
             self.frame = 0
 
-    def update(self,screen,objgroup,targetgroup):
+    def update(self,screen,targetgroup,bulletgroup):
+        print(self.action)
         self.hit_enemy(targetgroup)
+        self.hit_bullet(bulletgroup)
         self.stop()
-        self.animation(screen)
-        self.move(objgroup,targetgroup)
-        self.frame += 1
+        obj.Chara.update(self,screen)
+        
         

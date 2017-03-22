@@ -44,7 +44,7 @@ mc_imagelist = [[["../picture/mc/mc-front.png",1],
                  ["../picture/mc/mc-back.png",1],
                  ["../picture/mc/mc-right.png",1],
                  ["../picture/mc/mc-left.png",1]]]
-mc_statuslist = [10,1,1,5,10]
+mc_statuslist = [10,5,1,5,10]
 mcdict = make_dict(mc_imagelist,mc_statuslist)
 
 
@@ -70,7 +70,7 @@ boar_imagelist = [[["../picture/boar/boar-front.png",1],
                    ["../picture/boar/boar-back.png",1],
                    ["../picture/boar/boar-right.png",1],
                    ["../picture/boar/boar-left.png",1]]]
-boar_statuslist = [10,3,3,2]
+boar_statuslist = [10,3,3,1]
 enemydict["boar"] = make_dict(boar_imagelist,boar_statuslist)
 
 

@@ -50,7 +50,6 @@ class Chara(Obj):
         self.vx = 0
         self.vy = 0
         self.invincibletime = 0
-        self.bullettime = 35
 
     def draw(self,screen):
         self.image_width = self.image.get_width()
@@ -100,135 +99,26 @@ class Chara(Obj):
         self.vy = 0
         
         self.rect = Rect(self.x,self.y,self.width,self.height)
+
+    def damage(self,blt):
+        dmg = blt.atk - self.defe
+        if dmg < 0:
+            dmg = 0
+        return dmg
+
+    def death(self):
+        if self.hp <= 0:
+            self.kill()
         
     def move(self,objgroup):
         self.obj_collide(objgroup)
         
-    def update(self,screen,objgroup):
+    def update(self,screen):
+        self.death()
         self.animation(screen)
-        self.move(objgroup)
         self.frame += 1
+
         
-class MyChara(Chara):
-    def __init__(self,imagedict,x,y,hp,atk,defe,speed,stamina):
-        Chara.__init__(self,imagedict,x,y,hp,atk,defe,speed)
-        self.stamina = stamina
-        self.weapon_wide = 64
-        self.weapon_length = 32
-
-    def attack(self):
-        if self.action == "hit": return
-        if self.action not in ["attack","stop"]:
-            self.frame = 0
-            self.action = "attack"
-            if self.dire == "left":
-                MyBullet(self.x - self.weapon_length,
-                         self.y-(self.weapon_wide - self.height) /2,
-                         self.weapon_length,
-                         self.weapon_wide,
-                         self.atk,0,self.bullettime)
-            if self.action == "right":
-                MyBullet(self.x + self.weapon_length,
-                         self.y-(self.weapon_wide - self.height) /2,
-                         self.weapon_length,
-                         self.weapon_wide,
-                         self.atk,0,self.bullettime)
-            if self.action == "front":
-                MyBullet(self.x-(self.weapon_wide - self.width) / 2,
-                         self.y + self.height,
-                         self.weapon_wide,
-                         self.weapon_length,
-                         self.atk,0,self.bullettime)
-            if self.action == "back":
-                MyBullet(self.x-(self.weapon_wide - self.width) / 2,
-                         self.y - self.height,
-                         self.weapon_wide,
-                         self.weapon_length,
-                         self.atk,0,self.bullettime)
-            
-    def walk(self):
-        pressed_key = pygame.key.get_pressed()
-        if pressed_key[K_LEFT]:
-            self.vx = -self.speed
-            self.dire = "left"
-            self.action = "walk"
-        if pressed_key[K_RIGHT]:
-            self.vx = self.speed
-            self.dire = "right"
-            self.action = "walk"
-        if pressed_key[K_DOWN]:
-            self.vy = self.speed
-            self.dire = "front"
-            self.action = "walk"
-        if pressed_key[K_UP]:
-            self.vy = -self.speed
-            self.dire = "back"
-            self.action = "walk"
-        if self.vx != 0 and self.vy != 0:
-            self.vx = self.vx * 1.41 / 2
-            self.vy = self.vy * 1.41 / 2
-            
-    def stand(self):
-        pressed_key = pygame.key.get_pressed()
-        if not 1 in pressed_key:
-            self.action = "stand"
-
-    def stop(self):
-        if self.action == "stop" and self.frame > 10:
-            self.action = "stand"
-            self.frame = 0
-
-    def hit_enemy(self,enemys):
-        if self.invincibletime > 50:
-            self.invincibletime = 0
-        if self.action == "hit" or self.invincibletime:
-            self.invincibletime += 1
-            return
-        for enemy in enemys:
-            collide = self.rect.colliderect(enemy)
-            if collide:
-                self.action = "hit"
-                self.frame = 0
-                self.invincibletime += 1
-                dx = enemy.rect.centerx - self.rect.centerx
-                dy = enemy.rect.centery - self.rect.centery
-                rad = math.atan2(dy,dx)
-                self.vx = - self.speed * math.cos(rad) * 2
-                self.vy = - self.speed * math.sin(rad) * 2
-                if math.fabs(dx) > math.fabs(dy):
-                    if dx > 0:
-                        self.dire = "right"
-                    elif dx < 0:
-                        self.dire = "left"
-                if math.fabs(dx) < math.fabs(dy):
-                    if dy > 0:
-                        self.dire = "front"
-                    if dy < 0:
-                        self.dire = "back"
-                break
-                
-    def update(self,screen,objgroup,enemygroup):
-        self.hit_enemy(enemygroup)
-        self.stop()
-        if self.action == "hit":
-            self.frame += 1
-            if self.frame < 20:
-                vx,vy = self.vx,self.vy
-                self.move(objgroup)
-                self.vx,self.vy = vx,vy
-            else:
-                self.action = "stand"
-        elif self.action == "attack":
-            if self.frame > self.animecycle * self.imgobj.num - 1:
-                self.action = "stop"
-                self.frame = 0
-        else:
-            self.walk()
-            self.stand()
-            self.move(objgroup)
-        self.animation(screen)
-        self.frame += 1
-
 class Bullet(Obj):
     def __init__(self,x,y,width,height,atk,speed,
                  time,filename = None):
@@ -256,11 +146,6 @@ class Bullet(Obj):
         self.vanish()
 
         
-class MyBullet(Bullet):
-    def __init__(self,x,y,width,height,atk,speed,time,
-                 filename = None):
-        Bullet.__init__(self,x,y,width,height,atk,speed,
-                        time,filename)
 
 
 

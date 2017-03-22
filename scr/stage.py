@@ -8,6 +8,7 @@ import map
 import info
 import image
 import enemy
+import mc
 
 class Stage():
     GS = 32
@@ -19,18 +20,16 @@ class Stage():
         self.col = len(self.maplist[0])
         self.width = self.col * self.GS
         self.height = self.row * self.GS
-        self.all = pygame.sprite.Group()
         self.mc = pygame.sprite.Group()
         self.enemys = pygame.sprite.Group()
         self.objs = pygame.sprite.Group()
         self.Mybullets = pygame.sprite.Group()
-        obj.Obj.containers = self.all,self.objs
-        obj.MyChara.containers = self.all,self.mc
-        obj.MyBullet.containers = self.all,self.Mybullets
-        enemy.Enemy.containers = self.all,self.enemys
+        obj.Obj.containers = self.objs
+        mc.MyChara.containers = self.mc
+        mc.MyBullet.containers = self.Mybullets
+        enemy.Enemy.containers = self.enemys
         map.make_map(self.GS,self.maplist,self.objdict)
         self.bgimg = image.load_image("../picture/obj/floor.png")
-        
         
     def draw(self,screen):
         for y in range(self.row):
