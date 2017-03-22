@@ -11,7 +11,7 @@ import random
 class Enemy(obj.Chara):
     def __init__(self,imagedict,x,y,hp,atk,defe,speed):
         obj.Chara.__init__(self,imagedict,x,y,hp,atk,defe,speed)
-        self.searcharea = 200
+        self.searcharea = 300
         self.searchrect = pygame.Rect(self.rect.centerx - self.searcharea / 2,
                                       self.rect.centery - self.searcharea / 2,
                                       self.searcharea,
@@ -70,13 +70,16 @@ class Boar(Enemy):
             rad = math.atan2(dy,dx)
             self.vx = - self.speed * math.cos(rad)
             self.vy = - self.speed * math.sin(rad)
-        if target and self.action == "attack":
+        elif target and self.action == "attack":
             dx = self.rect.centerx - target.rect.centerx
             dy = self.rect.centery - target.rect.centery
             rad = math.atan2(dy,dx)
             self.vx = - self.speed * math.cos(rad) * 2
             self.vy = - self.speed * math.sin(rad) * 2
-        
+
+        else:
+            self.action = "stand"
+            
         if math.fabs(self.vx) >= math.fabs(self.vy):
             if self.vx > 0:
                 self.dire = "right"
@@ -112,15 +115,14 @@ class Boar(Enemy):
                 self.invincibletime += 1
                 
     def stop(self):
-        if self.action == "stop" and self.frame > 20:
+        if self.action == "stop" and self.frame > 50:
             self.action = "stand"
             self.frame = 0
 
-    def update(self,screen,targetgroup,bulletgroup):
-        print(self.action)
+    def update(self,screen,targetgroup,bulletgroup,offset):
         self.hit_enemy(targetgroup)
         self.hit_bullet(bulletgroup)
         self.stop()
-        obj.Chara.update(self,screen)
+        obj.Chara.update(self,screen,offset)
         
         

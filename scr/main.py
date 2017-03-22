@@ -15,9 +15,7 @@ def main():
     while True:
         clock.tick(60)
         game.game.screen.fill((0,0,0))
-
         game.game.update()
-
         pygame.display.update()    
 
 

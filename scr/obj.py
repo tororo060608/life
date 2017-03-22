@@ -20,11 +20,12 @@ class Obj(pygame.sprite.Sprite):
             self.rect = Rect(x,y,self.width,self.height)
 
             
-    def draw(self,screen):
-        screen.blit(self.image,(self.x,self.y))
+    def draw(self,screen,offset):
+        screen.blit(self.image,(self.x - offset[0],
+                                self.y - offset[1]))
 
-    def update(self,screen):
-        self.draw(screen)
+    def update(self,screen,offset):
+        self.draw(screen,offset)
 
         
 class Chara(Obj):
@@ -51,19 +52,20 @@ class Chara(Obj):
         self.vy = 0
         self.invincibletime = 0
 
-    def draw(self,screen):
+    def draw(self,screen,offset):
         self.image_width = self.image.get_width()
         self.image_height = self.image.get_height()
         draw_x = self.x + self.width / 2 - self.image_width / 2
         draw_y = self.y + self.height / 2 - self.image_height / 2
-        screen.blit(self.image,(draw_x,draw_y))
+        screen.blit(self.image,(draw_x - offset[0],
+                                draw_y - offset[1]))
 
-    def animation(self,screen):
+    def animation(self,screen,offset):
         self.imgobj = self.imagedict[self.action][self.dire]
         self.animelist = self.imgobj.imagelist
         self.image = self.animelist[self.frame // self.animecycle
                                     % self.imgobj.num]
-        self.draw(screen)
+        self.draw(screen,offset)
 
     def obj_collide(self,objgroup):
         newx = self.x + self.vx
@@ -113,9 +115,9 @@ class Chara(Obj):
     def move(self,objgroup):
         self.obj_collide(objgroup)
         
-    def update(self,screen):
+    def update(self,screen,offset):
         self.death()
-        self.animation(screen)
+        self.animation(screen,offset)
         self.frame += 1
 
         
@@ -144,10 +146,4 @@ class Bullet(Obj):
         self.frame += 1
         self.move()
         self.vanish()
-
         
-
-
-
-
-                

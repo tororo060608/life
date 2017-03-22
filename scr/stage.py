@@ -31,10 +31,11 @@ class Stage():
         map.make_map(self.GS,self.maplist,self.objdict)
         self.bgimg = image.load_image("../picture/obj/floor.png")
         
-    def draw(self,screen):
+    def draw(self,screen,offset):
         for y in range(self.row):
             for x in range(self.col):
-                screen.blit(self.bgimg,(x * self.GS,y * self.GS))
+                screen.blit(self.bgimg,(x * self.GS - offset[0],
+                                        y * self.GS - offset[1]))
 
 
 stage1 = Stage("../lib/map/map1.txt",info.objdict)

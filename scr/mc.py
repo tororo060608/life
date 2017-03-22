@@ -21,7 +21,7 @@ class MyChara(obj.Chara):
             self.action = "attack"
 
     def make_bullet(self):
-        if self.frame >= 12:
+        if self.frame == 12:
             if self.dire == "left":
                 MyBullet(self.x - self.weapon_length,
                          self.y-(self.weapon_wide - self.height) /2,
@@ -124,7 +124,7 @@ class MyChara(obj.Chara):
         else:
             obj.Chara.move(self,objgroup)
                 
-    def update(self,screen,enemygroup):
+    def update(self,screen,enemygroup,offset):
         self.hit_enemy(enemygroup)
         self.stop()
         if self.action == "hit":
@@ -137,7 +137,7 @@ class MyChara(obj.Chara):
         else:
             self.walk()
             self.stand()
-        obj.Chara.update(self,screen)
+        obj.Chara.update(self,screen,offset)
 
 
 class MyBullet(obj.Bullet):
